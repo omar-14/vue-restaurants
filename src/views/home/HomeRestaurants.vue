@@ -1,163 +1,230 @@
 <template>
-  <el-row>
-    <el-form
-      :model="ruleForm"
-      :rules="rules"
-      ref="ruleForm"
-      label-width="120px"
-      class="demo-ruleForm"
-    >
-      <el-form-item label="Activity name" prop="name">
-        <el-input v-model="ruleForm.name"></el-input>
-      </el-form-item>
-      <el-form-item label="Activity zone" prop="region">
-        <el-select v-model="ruleForm.region" placeholder="Activity zone">
-          <el-option label="Zone one" value="shanghai"></el-option>
-          <el-option label="Zone two" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time" required>
-        <el-col :span="11">
-          <el-form-item prop="date1">
-            <el-date-picker
-              type="date"
-              placeholder="Pick a date"
-              v-model="ruleForm.date1"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-form-item>
+  <div>
+    <el-card class="navbar" shadow="hover">
+      <el-row >
+        <el-col :span="2">
+          <img src="../../assets/img/restaurant-icon.jpg" alt="restaurant" class="image">
         </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-form-item prop="date2">
-            <el-time-picker
-              placeholder="Pick a time"
-              v-model="ruleForm.date2"
-              style="width: 100%"
-            ></el-time-picker>
-          </el-form-item>
+        <el-col :span="6" >
+          <div class="title-card">
+            <b>Restaurants :D</b>
+          </div>
         </el-col>
-      </el-form-item>
-      <el-form-item label="Instant delivery" prop="delivery">
-        <el-switch v-model="ruleForm.delivery"></el-switch>
-      </el-form-item>
-      <el-form-item label="Activity type" prop="type">
-        <el-checkbox-group v-model="ruleForm.type">
-          <el-checkbox label="Online activities" name="type"></el-checkbox>
-          <el-checkbox label="Promotion activities" name="type"></el-checkbox>
-          <el-checkbox label="Offline activities" name="type"></el-checkbox>
-          <el-checkbox label="Simple brand exposure" name="type"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources" prop="resource">
-        <el-radio-group v-model="ruleForm.resource">
-          <el-radio label="Sponsorship"></el-radio>
-          <el-radio label="Venue"></el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form" prop="desc">
-        <el-input type="textarea" v-model="ruleForm.desc"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')"
-          >Create</el-button
-        >
-        <el-button @click="resetForm('ruleForm')">Reset</el-button>
-      </el-form-item>
-    </el-form>
-  </el-row>
+        <el-col :span="6" v-if="false">
+          <div class="user-card">
+            Welcome: {{ userCard }}
+          </div>
+        </el-col>
+        <el-col :span="false ? 9 : 16">
+          <el-button type="info" class="button-home" plain><b>Log in</b></el-button>
+          <el-button
+            v-if="false"
+            type="success"
+            style="margin-top: 1rem;"
+            @click="handleRegister"
+            plain><b>Register a new Restaurant</b></el-button>
+          <!-- <el-button type="success" class="button-home" plain>Login</el-button> -->
+        </el-col>
+      </el-row>
+    </el-card>
+    <el-row style="margin-top: 2rem;" type="flex">
+      <el-col :span="activeForm ? 14 : 24">
+        <el-card style="margin-left: 1rem; margin-right: 1rem;">
+          <el-table
+            :data="tableData"
+            stripe
+            style="width: 100%">
+            <el-table-column
+              prop="name"
+              label="Name resturant"
+              :width="activeForm ? 180 : false">
+            </el-table-column>
+            <el-table-column
+              prop="type"
+              label="Type food"
+              :width="activeForm ? 100 : false">
+            </el-table-column>
+            <el-table-column
+              prop="address"
+              label="Resturant address"
+              :width="activeForm ? 300 : false">
+            </el-table-column>
+            <el-table-column
+              prop="telephone"
+              label="Resturant telephone"
+              :width="activeForm ? 180 : false">
+            </el-table-column>
+            <el-table-column
+              v-if="false"
+              fixed="right"
+              label="Operaciones"
+              width="180">
+              <template slot-scope="scope">
+                <el-button
+                  @click.native.prevent="handleEdit(scope.$index, tableData)"
+                  type="warning"
+                  size="mini">Edit</el-button>
+                <el-button
+                  @click.native.prevent="handleDelete(scope.$index, tableData)"
+                  type="danger"
+                  size="mini">Delete</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+      <el-col :span="activeForm ? 10 : 0">
+        <el-card shadow="hover" >
+          <div slot="header" class="clearfix" style="align: center">
+            <span>Card name</span>
+          </div>
+          <el-form
+          :label-position="labelPosition"
+          label-width="100px"
+          :model="formLabelAlign">
+          <el-form-item
+            label="Restaurant name">
+            <el-input v-model="formLabelAlign.name"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="Kind of food">
+            <el-input v-model="formLabelAlign.type"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="Restaurant address">
+            <el-input v-model="formLabelAlign.address"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="Restaurant telephone">
+            <el-input v-model="formLabelAlign.telephone"></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="bottom clearfix button-form">
+          <el-row>
+            <el-col :span="5">
+              <el-button
+                type="danger"
+                class="button"
+                @click="() => (this.activeForm = false)"
+                icon="el-icon-back">Cancel</el-button>
+            </el-col>
+            <el-col :span="5" v-if="isEdit">
+              <el-button
+                type="warning"
+                @click="handleEdit"
+                class="button"
+                icon="el-icon-collection-tag">Save</el-button>
+            </el-col>
+            <el-con :span="5" v-else>
+              <el-button
+                type="success"
+                class="button"
+                icon="el-icon-plus">Register</el-button>
+            </el-con>
+          </el-row>
+        </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
 export default {
   data () {
     return {
-      ruleForm: {
+      activeForm: false,
+      isEdit: true,
+      titleCard: '',
+      userCard: 'Omar Ramos',
+      tableData: [{
+        name: '2016-05-03',
+        type: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+        telephone: '555555555'
+      }, {
+        name: '2016-05-03',
+        type: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+        telephone: '555555555'
+      }, {
+        name: '2016-05-03',
+        type: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+        telephone: '555555555'
+      }, {
+        name: '2016-05-03',
+        type: 'Tom',
+        address: 'No. 189, Grove St, Los Angeles',
+        telephone: '555555555'
+      }],
+      labelPosition: 'top',
+      formLabelAlign: {
         name: '',
         region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      rules: {
-        name: [
-          {
-            required: true,
-            message: 'Please input Activity name',
-            trigger: 'blur'
-          },
-          {
-            min: 3,
-            max: 5,
-            message: 'Length should be 3 to 5',
-            trigger: 'blur'
-          }
-        ],
-        region: [
-          {
-            required: true,
-            message: 'Please select Activity zone',
-            trigger: 'change'
-          }
-        ],
-        date1: [
-          {
-            type: 'date',
-            required: true,
-            message: 'Please pick a date',
-            trigger: 'change'
-          }
-        ],
-        date2: [
-          {
-            type: 'date',
-            required: true,
-            message: 'Please pick a time',
-            trigger: 'change'
-          }
-        ],
-        type: [
-          {
-            type: 'array',
-            required: true,
-            message: 'Please select at least one activity type',
-            trigger: 'change'
-          }
-        ],
-        resource: [
-          {
-            required: true,
-            message: 'Please select activity resource',
-            trigger: 'change'
-          }
-        ],
-        desc: [
-          {
-            required: true,
-            message: 'Please input activity form',
-            trigger: 'blur'
-          }
-        ]
+        type: ''
       }
     }
   },
   methods: {
-    submitForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!')
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    handleSelect (key, keyPath) {
+      console.log(key, keyPath)
     },
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
+    handleRegister () {
+      this.titleCard = 'Register a new Restaurant'
+      this.isEdit = false
+      this.activeForm = true
+    },
+    handleEdit () {
+      this.titleCard = 'Edit a new Restaurant'
+      this.activeForm = true
+      this.isEdit = true
+    },
+    handleDelete (index, rows) {
+      this.$confirm('This will permanently delete the restaurant. Continue?', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.tableData.splice(index, 1)
+        this.$message({
+          type: 'success',
+          message: 'Delete completed'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: 'Delete canceled'
+        })
+      })
     }
   }
 }
 </script>
+
+<style scoped>
+.button-home {
+  float: right;
+  margin-right: 40px;
+  margin-top: 1rem;
+  width: 100px;
+}
+.title-card {
+  margin-left: 12px;
+  font-family:'Courier New', Courier, monospace;
+  margin-top: 1rem;
+  font-size: 2rem;
+}
+.user-card {
+  margin-top: 1.5rem;
+  font-size: 20px;
+  color: #7D9D9C;
+}
+.navbar {
+  background-color: #f5f3f0;
+}
+.image {
+  width: 70%;
+  display: block;
+}
+</style>

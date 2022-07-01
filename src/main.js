@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import './plugins/element'
-// import './plugins/vee-validate'
+import './plugins/vee-validate'
 import store from './store'
 
 // import '@/scss/index.scss' // global css
