@@ -33,7 +33,6 @@
                 <el-button
                   class="button-login"
                   type="primary"
-                  :loading="loading"
                   @click="submitForm()">Register</el-button>
               </el-row>
               <el-row style="margin-top: 1rem;">
@@ -54,7 +53,6 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      loading: false,
       form: {},
       formTemplate: {
         name: '',
@@ -74,9 +72,9 @@ export default {
     async registerUser () {
       try {
         const bodyFormData = new FormData()
-        bodyFormData.append('user_name', this.form.name)
+        bodyFormData.append('username', this.form.name)
         bodyFormData.append('email', this.form.email)
-        bodyFormData.append('password', this.form.paassword)
+        bodyFormData.append('password', this.form.password)
 
         await axios({
           method: 'post',

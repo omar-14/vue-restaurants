@@ -27,11 +27,10 @@
                 <el-button
                   class="button-login"
                   type="primary"
-                  :loading="loading"
                   @click="submitForm()">Submit</el-button>
               </el-row>
               <el-row style="margin-top: 1rem;">
-                <el-button class="button-login" @click="resetForm()">Register</el-button>
+                <el-button class="button-login" @click="goToSignUp">Sign Up</el-button>
               </el-row>
             </el-form-item>
           </el-form>
@@ -42,12 +41,13 @@
 </template>
 
 <script>
+import axios from 'axios'
 import _ from 'lodash'
 
 export default {
   data () {
     return {
-      loading: false,
+      data: null,
       form: {},
       formTemplate: {
         email: '',
@@ -59,19 +59,41 @@ export default {
     this.form = _.cloneDeep(this.formTemplate)
   },
   methods: {
-    goToCreateItem () {
-      this.$router.push({ name: 'create.item' })
+    goToSignUp () {
+      this.$router.push({ name: 'signup' })
     },
-    goToPuchaseItem () {
-      this.$router.push({ name: 'create.item' })
+    async loginUser () {
+      try {
+        const bodyFormData = new FormData()
+        bodyFormData.append('email', this.form.email)
+        bodyFormData.append('password', this.form.password)
+
+        await axios({
+          method: 'post',
+          url: 'http://localhost:8080/api/user/login',
+          data: bodyFormData,
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((response) => {
+          this.token = response.data.token
+          if (this.token !== undefined) {
+            this.$message({
+              type: 'success',
+              message: response.data.message
+            })
+            this.$router.push({ name: 'panel' })
+          } else {
+            this.$message({
+              type: 'warning',
+              message: response.data.message
+            })
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
     },
     submitForm () {
-      this.loading = true
-      const formLogIn = _.cloneDeep(this.form)
-      this.form = _.cloneDeep(this.formTemplate)
-      console.log(formLogIn)
-    },
-    resetForm () {
+      this.loginUser()
     }
   }
 }
