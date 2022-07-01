@@ -145,7 +145,7 @@
               <el-col :span="5">
                 <el-button
                   type="warning"
-                  @click="handleEdit"
+                  @click="onSave"
                   class="button"
                   icon="el-icon-collection-tag">Save</el-button>
               </el-col>
@@ -187,7 +187,7 @@ export default {
       try {
         await axios({
           method: 'get',
-          url: 'http://localhost:8080/api/restaurant/list'
+          url: 'http://localhost:8000/api/restaurant/list'
         }).then((response) => {
           this.list = response.data.data
           if (this.list !== undefined) {
@@ -216,7 +216,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: 'http://localhost:8080/api/restaurant/register',
+          url: 'http://localhost:8000/api/restaurant/register',
           data: bodyFormData,
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then((response) => {
@@ -239,6 +239,36 @@ export default {
       this.isEdit = true
       this.form = _.cloneDeep(row)
     },
+    async onSave () {
+      await this.updateRestaurant(this.form.id)
+    },
+    async updateRestaurant (id) {
+      try {
+        const bodyFormData = new FormData()
+        bodyFormData.append('name', this.form.name)
+        bodyFormData.append('type', this.form.type)
+        bodyFormData.append('address', this.form.address)
+        bodyFormData.append('telephone', this.form.telephone)
+
+        await axios({
+          method: 'put',
+          url: 'http://localhost:8000/api/restaurant/update/' + id,
+          data: bodyFormData,
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((response) => {
+          if (response.data.data !== undefined) {
+            this.$message({
+              type: 'success',
+              message: response.data.message
+            })
+            this.fetchRestaurants()
+            this.activeForm = false
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    },
     handleDelete (index, row) {
       this.$confirm('This will permanently delete the restaurant. Continue?', 'Warning', {
         confirmButtonText: 'OK',
@@ -259,7 +289,7 @@ export default {
       try {
         await axios({
           method: 'delete',
-          url: 'http://localhost:8080/api/restaurant/delete/' + id
+          url: 'http://localhost:8000/api/restaurant/delete/' + id
         }).then((response) => {
           if (response.data.data !== undefined) {
             this.$message({

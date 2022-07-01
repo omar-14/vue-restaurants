@@ -80,7 +80,7 @@ export default {
       try {
         await axios({
           method: 'get',
-          url: 'http://localhost:8080/api/restaurant/list'
+          url: 'http://localhost:8000/api/restaurant/list'
         }).then((response) => {
           this.list = response.data.data
           if (this.list !== undefined) {

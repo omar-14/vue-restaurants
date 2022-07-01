@@ -78,7 +78,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: 'http://localhost:8080/api/user/register',
+          url: 'http://localhost:8000/api/user/register',
           data: bodyFormData,
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then((response) => {
