@@ -15,114 +15,44 @@
             Welcome: {{ userCard }}
           </div>
         </el-col>
-        <el-col :span="false ? 9 : 16">
-          <el-button type="info" class="button-home" plain><b>Log in</b></el-button>
+        <el-col :span="16">
           <el-button
-            v-if="false"
-            type="success"
-            style="margin-top: 1rem;"
-            @click="handleRegister"
-            plain><b>Register a new Restaurant</b></el-button>
-          <!-- <el-button type="success" class="button-home" plain>Login</el-button> -->
+            type="info"
+            class="button-home"
+            @click="handleLogin"
+            plain><b>Log in</b></el-button>
         </el-col>
       </el-row>
     </el-card>
     <el-row style="margin-top: 2rem;" type="flex">
-      <el-col :span="activeForm ? 14 : 24">
+      <el-col :span="24">
         <el-card style="margin-left: 1rem; margin-right: 1rem;">
           <el-table
-            :data="tableData"
+            :data="list"
+            v-loading="loading"
             stripe
             style="width: 100%">
             <el-table-column
               prop="name"
               label="Name resturant"
-              :width="activeForm ? 180 : false">
+              width="200">
             </el-table-column>
             <el-table-column
               prop="type"
               label="Type food"
-              :width="activeForm ? 100 : false">
+              width="200">
             </el-table-column>
             <el-table-column
               prop="address"
               label="Resturant address"
-              :width="activeForm ? 300 : false">
+              width="300">
             </el-table-column>
             <el-table-column
               prop="telephone"
               label="Resturant telephone"
-              :width="activeForm ? 180 : false">
-            </el-table-column>
-            <el-table-column
-              v-if="false"
-              fixed="right"
-              label="Operaciones"
-              width="180">
-              <template slot-scope="scope">
-                <el-button
-                  @click.native.prevent="handleEdit(scope.$index, tableData)"
-                  type="warning"
-                  size="mini">Edit</el-button>
-                <el-button
-                  @click.native.prevent="handleDelete(scope.$index, tableData)"
-                  type="danger"
-                  size="mini">Delete</el-button>
-              </template>
+              width="300">
             </el-table-column>
           </el-table>
-        </el-card>
-      </el-col>
-      <el-col :span="activeForm ? 10 : 0">
-        <el-card shadow="hover" >
-          <div slot="header" class="clearfix" style="align: center">
-            <span>Card name</span>
-          </div>
-          <el-form
-          :label-position="labelPosition"
-          label-width="100px"
-          :model="formLabelAlign">
-          <el-form-item
-            label="Restaurant name">
-            <el-input v-model="formLabelAlign.name"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="Kind of food">
-            <el-input v-model="formLabelAlign.type"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="Restaurant address">
-            <el-input v-model="formLabelAlign.address"></el-input>
-          </el-form-item>
-          <el-form-item
-            label="Restaurant telephone">
-            <el-input v-model="formLabelAlign.telephone"></el-input>
-          </el-form-item>
-        </el-form>
-        <div class="bottom clearfix button-form">
-          <el-row>
-            <el-col :span="5">
-              <el-button
-                type="danger"
-                class="button"
-                @click="() => (this.activeForm = false)"
-                icon="el-icon-back">Cancel</el-button>
-            </el-col>
-            <el-col :span="5" v-if="isEdit">
-              <el-button
-                type="warning"
-                @click="handleEdit"
-                class="button"
-                icon="el-icon-collection-tag">Save</el-button>
-            </el-col>
-            <el-con :span="5" v-else>
-              <el-button
-                type="success"
-                class="button"
-                icon="el-icon-plus">Register</el-button>
-            </el-con>
-          </el-row>
-        </div>
         </el-card>
       </el-col>
     </el-row>
@@ -130,73 +60,39 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
-      activeForm: false,
-      isEdit: true,
-      titleCard: '',
-      userCard: 'Omar Ramos',
-      tableData: [{
-        name: '2016-05-03',
-        type: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-        telephone: '555555555'
-      }, {
-        name: '2016-05-03',
-        type: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-        telephone: '555555555'
-      }, {
-        name: '2016-05-03',
-        type: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-        telephone: '555555555'
-      }, {
-        name: '2016-05-03',
-        type: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-        telephone: '555555555'
-      }],
-      labelPosition: 'top',
-      formLabelAlign: {
-        name: '',
-        region: '',
-        type: ''
-      }
+      list: [],
+      loading: false
     }
   },
+  created () {
+    this.fetchRestaurants()
+  },
   methods: {
-    handleSelect (key, keyPath) {
-      console.log(key, keyPath)
+    handleLogin () {
+      this.$router.push({ name: 'login' })
     },
-    handleRegister () {
-      this.titleCard = 'Register a new Restaurant'
-      this.isEdit = false
-      this.activeForm = true
-    },
-    handleEdit () {
-      this.titleCard = 'Edit a new Restaurant'
-      this.activeForm = true
-      this.isEdit = true
-    },
-    handleDelete (index, rows) {
-      this.$confirm('This will permanently delete the restaurant. Continue?', 'Warning', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }).then(() => {
-        this.tableData.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: 'Delete completed'
+    async fetchRestaurants () {
+      try {
+        await axios({
+          method: 'get',
+          url: 'http://localhost:8080/api/restaurant/list'
+        }).then((response) => {
+          this.list = response.data.data
+          if (this.list !== undefined) {
+            this.$message({
+              type: 'success',
+              message: response.data.message
+            })
+          }
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Delete canceled'
-        })
-      })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
