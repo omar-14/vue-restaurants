@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'create.item',
+    name: 'home',
     component: () => import('@/views/home/HomeRestaurants'),
     meta: { title: 'Lista de restaurantes' }
   },
